@@ -1,0 +1,115 @@
+FUNÇÃO principal:
+    DEFINIR diretório como 'casos'
+    SE diretório não existir:
+        IMPRIMIR "A pasta 'casos' não foi encontrada."
+        SAIR
+
+    CHAMAR função processar_casos_no_diretorio(diretório)
+
+FIM FUNÇÃO principal
+
+---
+
+FUNÇÃO processar_casos_no_diretorio(diretorio):
+    OBTER lista de arquivos '.txt' no diretório
+    
+    SE lista estiver vazia:
+        IMPRIMIR "Nenhum arquivo de caso foi encontrado na pasta."
+        SAIR
+
+    PARA cada arquivo na lista de arquivos:
+        IMPRIMIR "Processando arquivo: <nome do arquivo>"
+
+        CHAMAR função ler_grade_do_arquivo(caminho do arquivo)
+        CHAMAR função construir_lista_adjacencia(grade)
+        
+        ENCONTRAR raízes chamando encontrar_nos_raiz(lista_adjacencia)
+
+        DEFINIR pontuacao_maxima como 0
+        PARA cada raiz na lista de raízes:
+            CHAMAR função dfs_iterativa(grade, raiz)
+            SE pontuação > pontuacao_maxima:
+                ATUALIZAR pontuacao_maxima
+
+        IMPRIMIR "A pontuação máxima para o arquivo é: <pontuação máxima>"
+
+FIM FUNÇÃO processar_casos_no_diretorio
+
+---
+
+FUNÇÃO ler_grade_do_arquivo(caminho_arquivo):
+    DEFINIR lista vazia 'grade'
+    
+    TENTAR abrir arquivo:
+        PARA cada linha no arquivo:
+            ADICIONAR linha convertida para lista na grade
+    SE ocorrer erro:
+        IMPRIMIR "O arquivo não foi encontrado."
+        SAIR
+    
+    RETORNAR grade
+FIM FUNÇÃO ler_grade_do_arquivo
+
+---
+
+FUNÇÃO construir_lista_adjacencia(grade):
+    CRIAR lista_adjacencia como dicionário de listas vazias
+    
+    PARA cada linha da grade:
+        PARA cada coluna da linha:
+            OBTER caractere atual da posição
+            SE caractere for espaço, continuar para próxima iteração
+            
+            DEFINIR movimentos_possiveis como lista vazia
+            SE caractere estiver no dicionário de direções:
+                OBTER movimentos baseados no caractere
+            SE caractere for número:
+                DEFINIR movimento como [(1, 0)] (baixo)
+            SE caractere for '#', pular a iteração atual
+            
+            PARA cada movimento permitido:
+                CALCULAR nova posição
+                SE nova posição for válida dentro da grade:
+                    SE o caractere na nova posição não for espaço:
+                        ADICIONAR nova posição à lista de adjacência da posição atual
+                        
+    RETORNAR lista_adjacencia
+FIM FUNÇÃO construir_lista_adjacencia
+
+---
+
+FUNÇÃO encontrar_nos_raiz(lista_adjacencia):
+    CRIAR conjunto 'posicoes_filhas'
+    
+    PARA cada nó na lista de adjacências:
+        ADICIONAR todos os vizinhos (nós filhos) ao conjunto 'posicoes_filhas'
+        
+    ENCONTRAR nós raiz como a diferença entre as chaves da lista_adjacencia e 'posicoes_filhas'
+    
+    RETORNAR nós raiz
+FIM FUNÇÃO encontrar_nos_raiz
+
+---
+
+FUNÇÃO dfs_iterativa(grade, no_inicial):
+    DEFINIR pilha como [(no_inicial, 0)] (nó e pontuação inicial)
+    DEFINIR pontuacao_maxima como 0
+    CRIAR conjunto de 'nos_visitados'
+
+    ENQUANTO houver elementos na pilha:
+        RETIRAR elemento da pilha (nó e pontuação atual)
+        
+        SE nó já foi visitado, continuar para próxima iteração
+        ADICIONAR nó ao conjunto de 'nos_visitados'
+        
+        OBTER caractere na posição atual
+        SE caractere for número, ADICIONAR valor à pontuação atual
+        
+        SE nó não tiver vizinhos:
+            SE pontuação atual for maior que pontuacao_maxima:
+                ATUALIZAR pontuacao_maxima
+        CASO CONTRÁRIO:
+            ADICIONAR vizinhos à pilha com pontuação acumulada
+
+    RETORNAR pontuacao_maxima
+FIM FUNÇÃO dfs_iterativa
